@@ -1,0 +1,255 @@
+﻿@inject IHttpContextAccessor HttpContextAccessor
+@{
+	QltvApiContext db = new QltvApiContext();
+	//Kiểm tra người dùng đăng nhập chưa
+	string taiKhoan = HttpContextAccessor.HttpContext.Session.GetString("UserName");
+								//đã đăng nhập
+	string maHoaDon = "";
+	if (taiKhoan != null)
+	{
+		//Lấy id khách hàng thông qua tài khoản
+		string getCustomerId = db.DocGia.FirstOrDefault(x => x.TaiKhoan == taiKhoan).MaDocGia;
+		//Kiểm tra có tồn tại hóa đơn nhưng chưa thanh toán
+		var checkPhieuMuon = db.PhieuMuons.FirstOrDefault
+			(x => x.TinhTrangPhieuMuon == "Chưa mượn" && x.MaDocGia == getCustomerId);
+		//Lấy mã hóa đơn
+
+		if (checkPhieuMuon != null)
+			maHoaDon = checkPhieuMuon.MaPhieuMuon;
+	}
+}
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<header id="tg-header" class="tg-header tg-headervtwo tg-haslayout">
+	<div class="tg-topbar">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<ul class="tg-addnav">
+						<li>
+							<a href="javascript:void(0);">
+								<i class="icon-envelope"></i>
+								<em>Contact</em>
+							</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);">
+								<i class="icon-question-circle"></i>
+								<em>Help</em>
+							</a>
+						</li>
+					</ul>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tg-middlecontainer">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<strong class="tg-logo"><a href="index-2.html"><img src="../ThuVien/images/logo.png" alt="company name here"></a></strong>
+					<div class="tg-searchbox">
+						<form class="tg-formtheme tg-formsearch">
+							<fieldset>
+								<input type="text" name="search" class="typeahead form-control" placeholder="Search by title, author, keyword, ISBN...">
+								<button type="submit" class="tg-btn">Search</button>
+							</fieldset>
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tg-navigationarea">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<div class="tg-navigationholder">
+						<nav id="tg-nav" class="tg-nav">
+							<div class="navbar-header">
+								<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#tg-navigation" aria-expanded="false">
+									<span class="sr-only">Toggle navigation</span>
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+								</button>
+							</div>
+							<div id="tg-navigation" class="collapse navbar-collapse tg-navigation">
+								<ul>
+									<li class="menu-item-has-children current-menu-item">
+										<a asp-controller="Home" asp-action="Index">Home</a>
+
+									</li>
+									<li class="menu-item-has-children menu-item-has-mega-menu">
+										<a asp-controller="TatCaSach" asp-action="TatCaSach">Sách</a>
+									</li>
+
+									@*<li class="menu-item-has-children">
+									<a href="javascript:void(0);">Thể Loại</a>
+									@await Component.InvokeAsync("TheLoaiMenu")
+									</li>*@
+									<li><a asp-controller="Home" asp-action="LienHe">Liên hệ</a></li>
+									<li><a href="products.html">Quy Định</a></li>
+								</ul>
+							</div>
+						</nav>
+						<div class="tg-wishlistandcart">
+							<div class="dropdown tg-themedropdown tg-wishlistdropdown">
+								<a href="javascript:void(0);" id="tg-wishlisst" class="tg-btnthemedropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<span class="tg-themebadge">3</span>
+									<i class="icon-heart"></i>
+								</a>
+								<div class="dropdown-menu tg-themedropdownmenu" aria-labelledby="tg-wishlisst">
+									<div class="tg-description"><p>No products were added to the wishlist!</p></div>
+								</div>
+							</div>
+							<div class="dropdown tg-themedropdown tg-minicartdropdown">
+								<a href="javascript:void(0);" id="tg-minicart" onclick="getProducts('@maHoaDon')" class="tg-btnthemedropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<span class="tg-themebadge"></span>
+									<i class="icon-cart"></i>
+								</a>
+								<div class="dropdown-menu tg-themedropdownmenu" aria-labelledby="tg-minicart">
+									<div class="tg-minicartbody" id="allBooks">
+										@*all product in cart*@
+
+									</div>
+									<div class="tg-minicartfoot">
+										<a class="tg-btnemptycart" onclick="ClearAll('@maHoaDon')" @*href="javascript:void(0);"*@>
+											<i class="fa fa-trash-o"></i>
+											<span>Clear Your Cart</span>
+										</a>
+										<span class="tg-subtotal">Tổng số sách mượn: <strong class="counting"></strong></span>
+										<div class="tg-btns">
+											<a class="tg-btn tg-active" href="javascript:void(0);">View Cart</a>
+											<a class="tg-btn" onclick="updateInvoice('@maHoaDon')" @*href="javascript:void(0);"*@>Checkout</a>
+										</div>
+									</div>
+								</div>
+							</div>
+							@if (HttpContextAccessor.HttpContext.Session.GetString("UserName") != null)
+							{
+								<div class="tg-themedropdown tg-currencydropdown">
+									<a asp-controller="TaiKhoan" asp-action="ChiTietTaiKhoan" style="color:aliceblue; font-size:15px;">Thông tin cá nhân</a>
+
+								</div>
+								<div class="tg-themedropdown tg-currencydropdown">
+									<a asp-controller="TaiKhoan" asp-action="DangXuat" style="color:aliceblue; font-size:15px;">Đăng xuất</a>
+								</div>
+							}
+							else
+							{
+								<div class="tg-themedropdown tg-currencydropdown">
+									<a asp-controller="DangNhap" asp-action="DangNhap" style="color:aliceblue; font-size:15px;">Đăng nhập</a>
+
+								</div>
+								<div class="tg-themedropdown tg-currencydropdown">
+									<a asp-controller="DangKy" asp-action="DangKy" style="color:aliceblue; font-size:15px;">Đăng ký</a>
+								</div>
+							}
+							<div class="dropdown tg-themedropdown tg-currencydropdown">
+								<a href="javascript:void(0);" id="tg-currenty" class="tg-btnthemedropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<span>USD</span>
+								</a>
+								<ul class="dropdown-menu tg-themedropdownmenu" aria-labelledby="tg-currenty">
+									<li>
+										<a href="javascript:void(0);">
+											<i>£</i>
+											<span>British Pound</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);">
+											<i>$</i>
+											<span>Us Dollar</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);">
+											<i>€</i>
+											<span>Euro</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+
+<script>
+	function getProducts(maPhieuMuon) {
+		var str = '';
+		$.ajax({
+			// Gọi API
+			url: 'https://localhost:7113/api/MuonSachAPI/' + maPhieuMuon,
+			method: "GET",
+			contentType: "json",
+			dataType: "json",
+			error: function (response) {
+				console.log(response);
+			},
+			//Khi thành công thì xuất hiện
+			success: function (data) {
+				var dem = 0;
+				$.each(data, function (key, val) {
+					str += `<div class="tg-minicarproduct">
+									<figure>
+										<img style="width: 70px; height: 70px;" src="${'../ThuVien/images/' + val.anhDaiDien}" alt="image description">
+									</figure>
+									<div class="tg-minicarproductdata">
+										<h5><a href="javascript:void(0);">${val.tenSach}</a></h5>
+									</div>
+								</div>`
+					dem += 1;
+				});
+				$('.counting').html(dem);
+				$('#allBooks').html(str);
+			}
+		});
+	}
+
+	//xóa tất cả các sách
+	function ClearAll(maPhieuMuon) {
+		fetch(`https://localhost:7113/api/MuonSachAPI/${maPhieuMuon}`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+
+		})
+			.then(response => response.json())
+			.then(data => {
+				getProducts(maPhieuMuon);
+				alert("Xóa thành công");
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+	}
+	//xóa tất cả các sách
+	function updateInvoice(maPhieuMuon) {
+		fetch(`https://localhost:7113/api/MuonSachAPI/${maPhieuMuon}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+
+		})
+			.then(response => response.json())
+			.then(data => {
+				getProducts(maPhieuMuon);
+				alert("Mượn sách thành công bạn sẽ quay lại trang chủ");
+				window.location.href = "https://localhost:7113/";
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+	}
+</script>

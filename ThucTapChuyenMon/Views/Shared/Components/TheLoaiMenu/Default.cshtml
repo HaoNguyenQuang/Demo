@@ -1,0 +1,59 @@
+﻿@using ThucTapChuyenMon.Models;
+@model IEnumerable<TheLoai>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<ul class="sub-menu">
+	@foreach (var item in Model)
+	{
+		var getUrl = "https://localhost:7113/api/sachapi/" + item.MaTheLoai;
+		<li><a style="cursor:pointer" onclick="showSachTheoTheLoai('@getUrl')">@item.TenTheLoai</a></li>
+	}
+</ul>
+@*<script>
+	function showSachTheoTheLoai(getUrl) {
+		var str = '';
+		$.ajax({
+			url: getUrl,
+			method: "GET",
+			contentType: "json",
+			dataType: "json",
+			error: function (response) {
+				console.log(response)
+			},
+			success: function (data) {
+				$.each(data, function (key, val) {
+					//str+='<p>'+val.tenSach+'</p>'
+					str += `<div class="item">
+					<div class="tg-postbook">
+						<figure class="tg-featureimg">
+							<div class="tg-bookimg">
+									<div class="tg-frontcover"><img src="${'../ThuVien/images/' + val.anhDaiDien}" alt="image description"></div>
+									<div class="tg-backcover"><img src="${'../ThuVien/images/' + val.anhDaiDien}" alt="image description"></div>
+							</div>
+							<a class="tg-btnaddtowishlist" href="javascript:void(0);">
+								<i class="icon-heart"></i>
+								<span>add to wishlist</span>
+							</a>
+						</figure>
+						<div class="tg-postbookcontent">
+							<div class="tg-booktitle">
+									<h3><a href="javascript:void(0);">${val.tenSach}</a></h3>
+							</div>
+								<span class="tg-bookwriter">By: <a href="javascript:void(0);">${val.tenTacGia}</a></span>
+							<span class="tg-stars"><span></span></span>
+
+							<a class="tg-btn tg-btnstyletwo" href="javascript:void(0);">
+								<i class="fa fa-shopping-basket"></i>
+								<em>Mượn Sách</em>
+							</a>
+						</div>
+					</div>
+				</div>`
+				});
+				$('#displayProducts').html(str);
+			}
+
+
+		});
+	}
+</script>*@

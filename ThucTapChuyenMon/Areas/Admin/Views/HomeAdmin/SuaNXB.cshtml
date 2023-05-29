@@ -1,0 +1,59 @@
+﻿@model ThucTapChuyenMon.Models.NhaXuatBan
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "SuaNXB";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script type="text/javascript">
+    function SuaNXB() {
+        var MaNxb = document.getElementById("MaNxb").value;
+        var DiaChi = document.getElementById("DiaChi").value;
+        var TenNxb = document.getElementById("TenNxb").value;
+        var url = 'https://localhost:7113/api/nxbapi?MaNxb=' + MaNxb
+            + '&DiaChi=' + DiaChi
+            + '&TenNxb=' + TenNxb;
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            contentType: 'json',
+            dataType: 'json',
+            error: function (response) {
+                alert("Sửa không thành công")
+            },
+            success: function (reponse) {
+                alert("Sửa thành công");
+                window.location.href = 'https://localhost:7113/admin/NhaXuatBan';
+            }
+        });
+    }
+</script>
+<h1>Sửa Nhà Xuất Bản</h1>
+
+<h4>Nhà Xuất Bản</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SuaNXB">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaNxb" />
+            <div class="form-group">
+                <label asp-for="DiaChi" class="control-label">Địa chỉ</label>
+                <input asp-for="DiaChi" class="form-control" />
+                <span asp-validation-for="DiaChi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TenNxb" class="control-label">Tên nhà xuất bản</label>
+                <input asp-for="TenNxb" class="form-control" />
+                <span asp-validation-for="TenNxb" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" onclick="SuaNXB()" value="Lưu" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="NhaXuatBan">Về danh sách</a>
+</div>
+

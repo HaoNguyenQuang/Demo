@@ -1,0 +1,144 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Sach";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Sách</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <h2>Danh Sách Sách</h2>
+        <div>
+            <input type="text" id="txtSearch" placeholder="Nhập từ khóa tìm kiếm">
+            <button type="button" onclick="search();">Tìm kiếm</button>
+        </div>
+        <a class="btn btn-primary" asp-action="ThemSach">Thêm sách</a>
+        <table id="tblKhachHang" class="table table-striped table-bordered dgTable">
+            <tr>
+                <th>Mã Sách</th>
+                <th>Tên Sách</th>
+                <th>Số Lượng</th>
+                <th>Năm Xuất Bản</th>
+                <th>Giá Bìa</th>
+                <th>Ảnh Đại Diện</th>
+                <th>Mã Vị Trí</th>
+                <th>Mã Thể Loại</th>
+                <th>Mã NXB</th>
+
+
+            </tr>
+            <tbody id="allKH">
+            </tbody>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            GetAllSach();
+        });
+        //hàm lấy ra toàn bộ danh sách khách hàng
+        function GetAllSach() {
+            $.ajax({
+                url: 'https://localhost:7113/api/sachapi',
+                type: 'GET',
+                contentType: 'json',
+                dataType: 'json',
+                error: function (response) {
+                },
+                success: function (reponse) {
+                    for (var i = 0; i <= reponse.length; i++) {
+                        const SachRow = reponse[i];
+                        const strHtml = '<tr>'
+                            + '<td>' + SachRow.maSach + '</td>'
+                            + '<td>' + SachRow.tenSach + '</td>'
+                            + '<td>' + SachRow.soLuong + '</td>'
+                            + '<td>' + SachRow.namXuatBan + '</td>'
+                            + '<td>' + SachRow.giaBia + '</td>'
+                            + '<td>' + SachRow.anhDaiDien + '</td>'
+                            + '<td>' + SachRow.maViTri + '</td>'
+                            + '<td>' + SachRow.maTheLoai + '</td>'
+                            + '<td>' + SachRow.maNxb + '</td>'
+                            + '<td> <button class="btn btn-primary" onclick="chuyenLink(\'' + SachRow.maSach + '\')">Sửa</button></td>'
+                            + '<td> <button class="btn btn-primary" onclick="chuyenLink1(\'' + SachRow.maSach + '\')">Chi Tiết</button></td>'
+                            + '<td> <button class="btn btn-primary" onclick="deleteSach(\'' + SachRow.maSach + '\')">Xóa</button></td>'
+                            + '</tr>';
+                        $('#allKH').append(strHtml)
+                    }
+                },
+                fail: function (response) {
+                }
+            });
+        }
+        function chuyenLink1(id) {
+            var url = 'https://localhost:7113/admin/homeadmin/ChiTietSach?maSach=' + id;
+            window.location.href = url;
+        }
+        function chuyenLink(id) {
+            var url = 'https://localhost:7113/admin/homeadmin/SuaSach?maSach=' + id;
+            window.location.href = url;
+        }
+        function deleteSach(id) {
+            var url = 'https://localhost:7113/api/sachapi?MaSach=' + id;
+            $.ajax({
+                url: url,
+                method: 'DELETE',
+                contentType: 'json',
+                dataType: 'json',
+                error: function (response) {
+                    alert("Xóa không thành công");
+                },
+                success: function (reponse) {
+                    alert("Xóa thành công");
+                    window.location.href = 'https://localhost:7113/admin/sach';
+                }
+            });
+        }
+        function search() {
+            var keyword1 = $('#txtSearch').val();
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:7113/api/sachapi/" + keyword1,
+                dataType: "json",
+                success: function (response) {
+                    var tblHtml = '';
+                    for (var i = 0; i < response.length; i++) {
+                        tblHtml += '<tr>';
+                        tblHtml += '<td>' + response[i].maSach + '</td>';
+                        tblHtml += '<td>' + response[i].tenSach + '</td>';
+                        tblHtml += '<td>' + response[i].soLuong + '</td>';
+                        tblHtml += '<td>' + response[i].namXuatBan + '</td>';
+                        tblHtml += '<td>' + response[i].giaBia + '</td>';
+                        tblHtml += '<td>' + response[i].anhDaiDien + '</td>';
+                        tblHtml += '<td>' + response[i].maViTri + '</td>';
+                        tblHtml += '<td>' + response[i].maTheLoai + '</td>';
+                        tblHtml += '<td>' + response[i].maNxb + '</td>';
+                        tblHtml += '<td> <button class="btn btn-primary" onclick="chuyenLink(\'' + response[i].maSach + '\')">Sửa</button></td>';
+                        tblHtml += '<td> <button class="btn btn-primary" onclick="chuyenLink1(\'' + response[i].maSach + '\')">Chi Tiết</button></td>';
+                        tblHtml += '<td> <button class="btn btn-primary" onclick="deleteSach(\'' + response[i].maSach + '\')">Xóa</button></td>';
+                        tblHtml += '</tr>';
+                    }
+                    $('#allKH').html(tblHtml);
+                },
+                error: function () {
+                    alert('Lỗi khi tìm kiếm thể loại');
+                }
+            });
+        }
+    </script>
+</body>
+

@@ -1,0 +1,68 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model ThucTapChuyenMon.Models.TheLoai
+
+@{
+    ViewData["Title"] = "ThemTheLoai";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script type="text/javascript">
+    function ThemTheLoai() {
+        var MaTheLoai = document.getElementById("MaTheLoai").value;
+        var TenTheLoai = document.getElementById("TenTheLoai").value;
+        var url = 'https://localhost:7113/api/theloaiapi?MaTheLoai=' + MaTheLoai
+            + '&TenTheLoai=' + TenTheLoai;
+        $.ajax({
+            url: url,
+            method: 'POST',
+            contentType: 'json',
+            dataType: 'json',
+            error: function (response) {
+                alert("Thêm mới không thành công")
+            },
+            success: function (reponse) {
+                alert("Thêm mới thành công");
+                window.location.href = 'https://localhost:7113/admin/theloai';
+            }
+        });
+    }
+</script>
+@{
+    int lastid = ViewBag.lastId;
+    string id = "";
+    if (lastid >= 9)
+        id = "TL" + (lastid + 1).ToString();
+    else
+        id = "TL0" + (lastid + 1).ToString();
+}
+
+<h1>Thêm Thể Loại</h1>
+
+<h4>Thể Loại</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ThemTheLoai">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="MaTheLoai" class="control-label">Mã Thể Loại</label>
+                <input asp-for="MaTheLoai" class="form-control" value="@id" readonly/>
+                <span asp-validation-for="MaTheLoai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TenTheLoai" class="control-label">Tên Thể Loại</label>
+                <input asp-for="TenTheLoai" class="form-control" />
+                <span asp-validation-for="TenTheLoai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" onclick="ThemTheLoai()" value="Thêm" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="TheLoai">Về danh sách</a>
+</div>
+
+
+

@@ -1,0 +1,129 @@
+﻿@using ThucTapChuyenMon.Models;
+@model ThucTapChuyenMon.Models.PhieuMuon
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "ChiTietPhieuMuon";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    QltvApiContext db = new QltvApiContext();
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<h1>Chi Tiết Phiếu Mượn</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Ngày Mượn
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NgayMuon)
+        </dd>
+        <dt class = "col-sm-2">
+            Ngày Trả
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NgayTra)
+        </dd>
+        <dt class = "col-sm-2">
+            Tình Trạng Phiếu Mượn
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TinhTrangPhieuMuon)
+        </dd>
+        <dt class="col-sm-2">
+            Chi Tiết Sách
+        </dt>
+        @{
+            var chitietphieumuon = db.ChiTietPhieuMuons.Where(x => x.MaPhieuMuon == Model.MaPhieuMuon).ToList();
+        }
+
+            <dd class="col-sm-10"></dd>
+            <dt class="col-sm-2"></dt>
+            <dd class="col-sm-10">
+            <table class="table table-bordered dataTable" @*id="dataTable"*@
+                   width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info"
+                   style="width: 100%;">
+                    
+                        <tr>
+                            <th>
+                                Mã Phiếu Mượn
+                            </th>
+                            <th>
+                                Tên Sách
+                            </th>
+                            <th>
+                                Số lượng
+                            </th>                           
+                        </tr>
+                    
+                    <tbody>
+                    @{
+                        var chitietphieumuon1 = db.ChiTietPhieuMuons.Where(x => x.MaPhieuMuon == Model.MaPhieuMuon).ToList();
+                        int slchietiethoadon = chitietphieumuon1.Count(), i = 0;
+                        double TongSach = 0, SoLuong = 0;
+                    }
+                        @foreach (var item in chitietphieumuon)
+                        {
+                            <tr>
+                                <td>
+                                    @{
+                                        var pm = db.PhieuMuons.Find(item.MaPhieuMuon);
+                                    }  
+                                    @pm.MaPhieuMuon
+                                </td>
+                                <td>
+                                @{
+                                    var sach = db.Saches.Find(item.MaSach);
+                                }
+                                @sach.TenSach
+                            </td>
+                                <td>
+                                    @item.SoLuong
+                                </td> 
+                                 @{
+                                     SoLuong = @item.SoLuong;
+                                     TongSach += SoLuong;
+                                 }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </dd>
+
+       
+
+        <dt class = "col-sm-2">
+            Tổng Sách Mượn
+        </dt>
+        <dd class = "col-sm-10">
+            @TongSach
+        </dd>
+        <dt class = "col-sm-2">
+            Độc Giả
+        </dt>
+        <dd class = "col-sm-10">
+            @{
+                var MaDG = new QltvApiContext().DocGia.Find(Model.MaDocGia);
+            }
+            @MaDG.TenDocGia
+        </dd>
+        <dt class = "col-sm-2">
+            Nhân Viên
+        </dt>
+        <dd class = "col-sm-10">
+            @{
+                var MaNV = new QltvApiContext().NhanViens.Find(Model.MaNhanVien);
+            }
+            @MaNV.HoTen
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="PhieuMuon">Quay Lại</a>
+</div>

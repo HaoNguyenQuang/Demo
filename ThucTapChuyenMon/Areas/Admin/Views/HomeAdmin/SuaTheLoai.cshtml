@@ -1,0 +1,52 @@
+﻿@model ThucTapChuyenMon.Models.TheLoai
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "SuaTheLoai";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script type="text/javascript">
+    function SuaTheLoai() {
+        var MaTheLoai = document.getElementById("MaTheLoai").value;
+        var TenTheLoai = document.getElementById("TenTheLoai").value;
+        var url = 'https://localhost:7113/api/theloaiapi?MaTheLoai=' + MaTheLoai
+            + '&TenTheLoai=' + TenTheLoai;
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            contentType: 'json',
+            dataType: 'json',
+            error: function (response) {
+                alert("Sửa không thành công")
+            },
+            success: function (reponse) {
+                alert("Sửa thành công");
+                window.location.href = 'https://localhost:7113/admin/theloai';
+            }
+        });
+    }
+</script>
+<h1>Sửa Thể Loại</h1>
+
+<h4>Thể Loại</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SuaTheLoai">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaTheLoai" />
+            <div class="form-group">
+                <label asp-for="TenTheLoai" class="control-label">Tên Thể Loại</label>
+                <input asp-for="TenTheLoai" class="form-control" />
+                <span asp-validation-for="TenTheLoai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" onclick="SuaTheLoai()" value="Sửa" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="TheLoai">Về danh sách</a>
+</div>
+

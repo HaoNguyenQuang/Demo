@@ -1,0 +1,172 @@
+﻿@using ThucTapChuyenMon.Models;
+@model IEnumerable<TheLoai>
+@inject IHttpContextAccessor HttpContextAccessor
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    int splitId(string id)
+    {
+        //KH002
+        string res = id.Substring(2, id.Length - 2);
+        return int.Parse(res);
+    }
+    QltvApiContext db = new QltvApiContext();
+    //Kiểm tra người dùng đăng nhập chưa
+    string taiKhoan = HttpContextAccessor.HttpContext.Session.GetString("UserName");
+                             //đã đăng nhập
+    if (taiKhoan != null)
+    {
+        //Lấy id khách hàng thông qua tài khoản
+        string getCustomerId = db.DocGia.FirstOrDefault(x => x.TaiKhoan == taiKhoan).MaDocGia;
+        //Kiểm tra có tồn tại hóa đơn nhưng chưa thanh toán
+        var checkPhieuMuon = db.PhieuMuons.FirstOrDefault
+            (x => x.TinhTrangPhieuMuon == "Chưa mượn" && x.MaDocGia == getCustomerId);
+        //Lấy mã hóa đơn
+        string maHoaDon = "";
+        if (checkPhieuMuon != null)
+        {
+            maHoaDon = checkPhieuMuon.MaPhieuMuon;
+        }
+        if (maHoaDon != "")
+        {
+            ViewBag.checkHD = 1; // đã có hóa đơn
+            ViewBag.maHDB = maHoaDon;
+        }
+        else
+        {
+            var lstPhieuMuon = db.PhieuMuons.ToList();
+            int lastIdHoaDonBan = splitId(lstPhieuMuon.OrderByDescending(x => splitId(x.MaPhieuMuon))
+                .FirstOrDefault().MaPhieuMuon.ToString()) + 1;
+            ViewBag.checkHD = 0;
+            ViewBag.maHDB = "PM" + lastIdHoaDonBan.ToString();
+        }
+        //Lấy id khách hàng
+        ViewBag.maKH = getCustomerId;
+    }
+}
+<ul>
+
+    <li><a asp-controller="TatCaSach" asp-action="TatCaSach">Tất cả sách</a></li>
+    @foreach (var item in Model)
+    {
+
+        var getUrl = "https://localhost:7113/api/SachAPI1/" + item.MaTheLoai;
+        <li><a style="cursor:pointer" onclick="showSachTheoTheLoai('@getUrl')"><span>@item.TenTheLoai</span></a></li>
+    }
+</ul>
+<script>
+    function showSachTheoTheLoai(getUrl) {
+        var str = '';
+        $.ajax({
+            url: getUrl,
+            method: "GET",
+            contentType: "json",
+            dataType: "json",
+            error: function (response) {
+                console.log(response)
+            },
+            success: function (data) {
+                $.each(data, function (key, val) {
+                    //str+='<p>'+val.tenSach+'</p>'
+                    str += `<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
+                                    <div class="tg-postbook">
+                                        <figure class="tg-featureimg">
+                                            <div class="tg-bookimg">
+                                                <div class="tg-frontcover"><img src="${'../ThuVien/images/' + val.anhDaiDien}" alt="image description"></div>
+                                                <div class="tg-backcover"><img src="${'../ThuVien/images/' + val.anhDaiDien}" alt="image description"></div>
+                                            </div>
+                                            <a class="tg-btnaddtowishlist" href="javascript:void(0);">
+                                                <i class="icon-heart"></i>
+                                                <span>add to wishlist</span>
+                                            </a>
+                                        </figure>
+                                        <div class="tg-postbookcontent">
+                                            <div class="tg-booktitle">
+                                                    <h3><a href="javascript:void(0);" onclick="chuyenLink('${val.maSach}')">${val.tenSach}</a></h3>
+                                            </div>
+                                                <span class="tg-bookwriter">By: <a href="javascript:void(0);" >${val.tenTacGia}</a></span>
+                                            <span class="tg-stars"><span></span></span>
+                                                <a class="tg-btn tg-btnstyletwo" onclick="AddToCart('@ViewBag.checkHD','@ViewBag.maHDB','${val.maSach}','@ViewBag.maKH')">
+                                                <i class="fa fa-shopping-basket"></i>
+                                                <em>Mượn sách</em>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>`
+                });
+                $('#displayProducts').html(str);
+            }
+        });
+    }
+    function chuyenLink(id) {
+        var url = 'https://localhost:7113/home/chitietsanpham?maSP=' + id;
+        window.location.href = url;
+    }
+</script>
+<script>
+    function AddToCart(checkHD, maPhieuMuon, maSach, maKH) {
+        const currentUrl = window.location.href;
+
+        if (checkHD == "1") {
+            const data = {
+                MaPhieuMuon: maPhieuMuon,
+                MaSach: maSach,
+                SoLuong: 1
+            };
+
+            //window.location.replace("https://localhost:7067/TaiKhoan/DangNhap");
+            fetch('https://localhost:7113/api/MuonSachAPI/invoiceDetailExsits', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Nếu đăng kí thành công, chuyển hướng đến trang "Thank you"
+                        alert("Thêm sách thành công")
+                    } else {
+                        alert("Sách này đã có trong giỏ hàng")
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                });
+        }
+        if (checkHD == "0") {
+            const data = {
+                MaPhieuMuon: maPhieuMuon,
+                NgayMuon: "2023-04-23T08:30:00Z",
+                NgayTra: "2023-04-25T08:30:00Z",
+                TinhTrangPhieuMuon: "Chưa mượn",
+                TongSachMuon: 2,
+                MaDocGia: maKH,
+                MaNhanVien: "admin",
+                MaSach: maSach,
+                SoLuong: 1
+            };
+
+            //window.location.replace("https://localhost:7067/TaiKhoan/DangNhap");
+            fetch('https://localhost:7113/api/MuonSachAPI/invoiceDetail', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Nếu đăng kí thành công, chuyển hướng đến trang "Thank you"
+                        alert("Thêm sách thành công");
+                        window.location.href = currentUrl;
+                    } else {
+
+                        alert('Sách này đã có trong phiếu mượn');
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                });
+        }
+    }
+</script>

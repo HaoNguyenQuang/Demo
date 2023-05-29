@@ -1,0 +1,67 @@
+﻿@model ThucTapChuyenMon.Models.NhaXuatBan
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    int lastid = ViewBag.lastId;
+    string id = "";
+    if (lastid >= 9)
+        id = "NXB" + (lastid + 1).ToString();
+    else
+        id = "NXB0" + (lastid + 1).ToString();
+    ViewData["Title"] = "ThemNXB";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Thêm Mới Nhà Xuất Bản</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ThemNXB">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">Mã Nhà Xuất Bản</label>
+                <input id="MaNXB" class="form-control" disabled value="@id" />
+                <span asp-validation-for="MaNxb" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Địa Chỉ</label>
+                <input id="DiaChi" class="form-control" />
+                <span asp-validation-for="DiaChi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Tên Nhà Xuất Bản</label>
+                <input id="TenNXB" class="form-control" />
+                <span asp-validation-for="TenNxb" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" onclick="ThemNXB()" value="Thêm" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="NhaXuatBan">Quay Lại</a>
+</div>
+
+<script type="text/javascript">
+    function ThemNXB() {
+        var MaNXB = document.getElementById("MaNXB").value;
+        var DiaChi = document.getElementById("DiaChi").value;
+        var TenNXB = document.getElementById("TenNXB").value;
+        var url = 'https://localhost:7113/api/nxbapi?maNxb=' + MaNXB
+            + '&diaChi=' + DiaChi + '&tenNxb=' + TenNXB;
+        $.ajax({
+            url: url,
+            method: 'POST',
+            contentType: 'json',
+            dataType: 'json',          
+            error: function (response) {
+                alert("Thêm mới không thành công")
+            },
+            success: function (reponse) {
+                alert("Thêm mới thành công");
+                window.location = 'https://localhost:7113/admin/homeadmin/NhaXuatBan';
+            }
+        });
+    }
+</script>

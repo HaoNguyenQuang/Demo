@@ -1,0 +1,209 @@
+﻿@{
+    Layout = null;
+}
+@model int
+@{
+    int last = Model + 1;
+    string idCustomer = "";
+    if (last >= 10)
+    {
+        idCustomer = "KH" + last.ToString();
+    }
+    else
+    {
+        idCustomer = "KH0" + last.ToString();
+    }
+    QltvApiContext db = new QltvApiContext();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trang đăng nhập</title>
+    <link rel="stylesheet" type="text/css" @*href="style.css"*@>
+    <style>
+        body {
+            background: linear-gradient(to right, #9b59b6, #2980b9);
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background-color: #FFF;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            margin: 100px auto;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #555;
+        }
+
+        form {
+            display: block;
+            margin: 20px auto;
+            text-align: left;
+            width: 80%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="text"], input[type="password"] {
+            border: none;
+            border-radius: 3px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1) inset;
+            display: block;
+            font-size: 16px;
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 100%;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 3px;
+            color: #FFF;
+            cursor: pointer;
+            display: block;
+            font-size: 16px;
+            margin: 20px auto;
+            padding: 10px;
+            width: 80%;
+        }
+
+            button[type="submit"]:hover {
+                background-color: #3E8E41;
+            }
+
+        .register {
+            margin-top: 20px;
+        }
+
+            .register a {
+                color: #4CAF50;
+                text-decoration: none;
+            }
+
+    </style>
+
+    <!-- Hiếu thêm JS-->
+    <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+    <!--Bootstrap-->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <h1>Đăng ký</h1>
+        <form>
+            <label for="username">Tên đăng nhập:</label>
+            <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập">
+
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" placeholder="Nhập email">
+
+            <label for="password">Mật khẩu:</label>
+            <input type="password" id="password" name="password" placeholder="Nhập mật khẩu">
+
+            <label for="password">Xác nhận mật khẩu:</label>
+            <input type="password" id="pasword1" name="password1" placeholder="Nhập mật khẩu xác nhận">
+
+            <a class="btn btn-primary" onclick="sukienDangKy('@idCustomer');" style="cursor:pointer;">Đăng ký</a>
+        </form>
+        <div class="register">
+            <p>Quay trở lại! <a asp-controller="DangNhap" asp-action="DangNhap">Đăng nhập</a></p>
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+
+    function sukienDangKy(idCus) {
+        var idCustomer = idCus;
+        //Lấy giá trị từ input
+        var inputUsername = document.getElementById("username").value;
+        var inputEmail = document.getElementById("email").value;
+        var inputPassword = document.getElementById("password").value;
+        var inputConfirmPass = document.getElementById("pasword1").value;
+
+
+        //kiểm tra rỗng
+        if (inputUsername == "") {
+            alert("Không được để Username trống");
+            inputUsername.focus();
+            return;
+        }
+
+        //Kiểm tra Email
+        if (inputEmail == "") {
+            alert("Không được để email trống")
+            inputEmail.focus();
+            return;
+        }
+        else {
+            var regexEmail = /^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+            if (!inputEmail.match(regexEmail)) {
+                alert("Sai định dạng Email")
+                inputEmail.focus();
+                return;
+            }
+        }
+
+        //Kiểm tra mật khẩu
+        if (inputPassword == "") {
+            alert("Không được để Mật khẩu trống");
+            inputPassword.focus();
+            return;
+        }
+        //Xác nhận mật khẩu
+        if (inputConfirmPass == "") {
+            alert("Bạn chưa xác nhận mật khẩu");
+            inputConfirmPass.focus();
+            return;
+        }
+
+        //Kiểm tra nếu xác nhận không trùng khớp
+        if (inputPassword != inputConfirmPass) {
+            alert("Mật khẩu chưa trùng khớp")
+            inputConfirmPass.focus();
+            return;
+        }
+
+        var url = 'https://localhost:7113/api/taikhoanapi/dangky?madocgia=' + idCustomer + '&TaiKhoan=' + inputUsername +
+        '&Email='+inputEmail+'&MatKhau=' + inputPassword;
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            contentType: 'json',
+            dataType: 'json',
+            error: function (response) {
+                alert("Tài khoản này đã tồn tại");
+            },
+            success: function (reponse) {
+                alert("Đăng ký thành công");
+                window.location = "https://localhost:7113/DangNhap/DangNhap";
+            }
+        });
+
+
+
+    }
+
+
+</script>
+

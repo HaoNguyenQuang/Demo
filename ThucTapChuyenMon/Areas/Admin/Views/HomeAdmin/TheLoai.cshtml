@@ -1,0 +1,112 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "TheLoai";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách thể loại</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <h2>Danh Sách Thể Loại</h2>
+        <div>
+            <input type="text" id="txtSearch" placeholder="Nhập từ khóa tìm kiếm">
+            <button type="button" onclick="search()">Tìm kiếm</button>
+        </div>
+        <a class="btn btn-primary" asp-action="ThemTheLoai">Thêm thể loại</a>
+        <table id="tblKhachHang" class="table table-striped table-bordered dgTable">
+            <tr>
+                <th>Mã Thể Loại</th>
+                <th>Tên Thể Loại</th>
+                
+            </tr>
+            <tbody id="allKH">
+            </tbody>
+
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            GetAllTheLoai();
+        });
+        //hàm lấy ra toàn bộ danh sách khách hàng
+        function GetAllTheLoai() {
+            $.ajax({
+                url: 'https://localhost:7113/api/theloaiapi',
+                type: 'GET',
+                contentType: 'json',
+                dataType: 'json',
+                error: function (response) {
+                },
+                success: function (reponse) {
+                    for (var i = 0; i <= reponse.length; i++) {
+                        const theloaiRow = reponse[i];
+                        const strHtml = '<tr><td>' + theloaiRow.maTheLoai + '</td><td>'
+                            + theloaiRow.tenTheLoai + '</td><td> <button class="btn btn-primary" onclick="chuyenLink(\'' + theloaiRow.maTheLoai + '\')">Sửa</button></td>'
+                            + '<td> <button class="btn btn-primary" onclick="deleteTheLoai(\'' + theloaiRow.maTheLoai + '\')">Xóa</button></td></tr>';
+                        $('#allKH').append(strHtml)
+                    }
+                },
+                fail: function (response) {
+                }
+            });
+        }
+        function deleteTheLoai(id) {
+            var url = 'https://localhost:7113/api/theloaiapi?MaTheLoai=' + id;
+            $.ajax({
+                url: url,
+                method: 'DELETE',
+                contentType: 'json',
+                dataType: 'json',
+                error: function (response) {
+                    alert("Xóa không thành công");
+                },
+                success: function (reponse) {
+                    alert("Xóa thành công");
+                    window.location.href = 'https://localhost:7113/admin/theloai';
+                }
+            });
+        }
+        function chuyenLink(id) {
+            var url = 'https://localhost:7113/admin/homeadmin/SuaTheLoai?maTL=' + id;
+            window.location.href = url;
+        }
+        function search() {
+            var keyword = $('#txtSearch').val();
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:7113/api/theloaiapi/" + keyword,
+                dataType: "json",
+                success: function (response) {
+                    var tblHtml = '';
+                    for (var i = 0; i < response.length; i++) {
+                        tblHtml += '<tr>';
+                        tblHtml += '<td>' + response[i].maTheLoai + '</td>';
+                        tblHtml += '<td>' + response[i].tenTheLoai + '</td>';
+                        tblHtml += '<td> <button class="btn btn-primary" onclick="chuyenLink(\'' + response[i].maTheLoai + '\')">Sửa</button></td>';
+                        tblHtml += '<td> <button class="btn btn-primary" onclick="deleteTheLoai(\'' + response[i].maTheLoai + '\')">Xóa</button></td>';
+                        tblHtml += '</tr>';
+                    }
+                    $('#allKH').html(tblHtml);
+                },
+                error: function () {
+                    alert('Lỗi khi tìm kiếm thể loại');
+                }
+            });
+        }
+    </script>
+</body>
+

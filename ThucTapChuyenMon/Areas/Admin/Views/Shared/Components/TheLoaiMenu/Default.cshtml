@@ -1,0 +1,7 @@
+﻿@using ThucTapChuyenMon.Models;
+@model IEnumerable<TheLoai>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@foreach (var item in Model)
+{
+	<li class="nav-item"> <a class="nav-link" asp-area="Admin" asp-controller="HomeAdmin" asp-action="SachTheoTheLoai" asp-route-MaTheLoai="@item.MaTheLoai">@item.TenTheLoai</a></li>
+}

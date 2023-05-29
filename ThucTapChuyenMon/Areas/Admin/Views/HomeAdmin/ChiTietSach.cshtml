@@ -1,0 +1,95 @@
+﻿@using ThucTapChuyenMon.Models;
+@model ThucTapChuyenMon.Models.Sach
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "ChiTietSach";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Chi Tiết Sách</h1>
+
+<div>
+    <h4>Sách</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+           Tên Sách
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TenSach)
+        </dd>
+        <dt class = "col-sm-2">
+            Tên Tác Giả
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TenTacGia)
+        </dd>
+        <dt class = "col-sm-2">
+            Số Lượng
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SoLuong)
+        </dd>
+        <dt class = "col-sm-2">
+            Năm Xuất Bản
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NamXuatBan)
+        </dd>
+        <dt class = "col-sm-2">
+            Mô Tả
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MoTa)
+        </dd>
+        <dt class = "col-sm-2">
+            Giá Bìa
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GiaBia)
+        </dd>
+        <dt class = "col-sm-2">
+           Ảnh Đại Diện
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AnhDaiDien)
+        </dd>
+        <dt class = "col-sm-2">
+            Tình Trạng Sách
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TinhTrangSach)
+        </dd>
+        <dt class = "col-sm-2">
+          Nhà Xuất Bản
+        </dt>
+        <dd class = "col-sm-10">
+            @{
+                var MaNXB = new QltvApiContext().NhaXuatBans.Find(Model.MaNxb);
+            }
+            @MaNXB.TenNxb
+        </dd>
+        <dt class = "col-sm-2">
+            Thể Loại
+        </dt>
+        <dd class = "col-sm-10">
+            @{
+                var MaTheLoai = new QltvApiContext().TheLoais.Find(Model.MaTheLoai);
+            }
+            @MaTheLoai.TenTheLoai
+        </dd>
+        <dt class = "col-sm-2">
+            Vị Trí
+        </dt>
+        <dd class = "col-sm-10">
+            @{
+                var MaViTri = new QltvApiContext().ViTris.Find(Model.MaViTri);
+            }
+            @MaViTri.MaViTri
+        </dd>
+    </dl>
+</div>
+<div>
+@*    <a asp-action="Edit" asp-route-id="@Model.MaSach">Edit</a> |*@
+    <a asp-action="Sach">Về danh sách</a>
+</div>

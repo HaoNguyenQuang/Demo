@@ -1,0 +1,153 @@
+﻿@using ThucTapChuyenMon.Models;
+@model ThucTapChuyenMon.Models.PhieuMuon
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "SuaPhieuMuon";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    QltvApiContext db = new QltvApiContext();
+}
+
+<h1>Trả Sách</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SuaPhieuMuon">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaPhieuMuon" />
+            <div class="form-group">
+                <label class="control-label">Mã Phiếu Mượn</label>
+                <input asp-for="MaPhieuMuon" id="MaPhieuMuon" disabled class="form-control" />
+                <span asp-validation-for="MaPhieuMuon" class="text-danger"></span>
+
+                <label class="control-label">Ngày Mượn</label>
+                <input asp-for="NgayMuon" id="NgayMuon" disabled class="form-control" />
+                <span asp-validation-for="NgayMuon" class="text-danger"></span>
+
+                <label class="control-label">Ngày Trả</label>
+                <input asp-for="NgayTra" id="NgayTra" disabled class="form-control" />
+                <span asp-validation-for="NgayTra" class="text-danger"></span>             
+
+                <label class="control-label">Tổng Sách Mượn</label>
+                <input asp-for="TongSachMuon" id="TongSachMuon" disabled class="form-control" />
+                <span asp-validation-for="TongSachMuon" class="text-danger"></span>
+
+                <label class="control-label">Mã Độc Giả</label>
+                <input asp-for="MaDocGia" id="MaDocGia" disabled class="form-control" />
+                <span asp-validation-for="MaDocGia" class="text-danger"></span>
+
+                <label class="control-label">Mã Nhân Viên</label>
+                <input asp-for="MaNhanVien" id="MaNhanVien" disabled class="form-control" />
+                <span asp-validation-for="MaNhanVien" class="text-danger"></span>
+
+                <label class="control-label">Ngày Trả Thực Tế</label>
+                <input asp-for="NgayTraThucTe" id="NgayTraThucTe" class="form-control" />
+                <span asp-validation-for="NgayTraThucTe" class="text-danger"></span>
+
+                <div>
+                    <label class="control-label">Tình Trạng Phiếu Mượn</label>
+                    <select id="TrangThai" style="height: 50px; font-size: 15px;" class="form-control" asp-items="ViewBag.TrangThai"></select>
+                    <span asp-validation-for="TinhTrangPhieuMuon" class="text-danger"></span>
+                </div>
+                
+
+                <label class="control-label">Tiền Phạt</label>
+                <input id="TienPhat" class="form-control" />
+                <span asp-validation-for="TienPhat" class="text-danger"></span> 
+                
+                <label class="control-label">Ghi Chú</label>
+                <input id="GhiChu" class="form-control" />
+                <span asp-validation-for="GhiChu" class="text-danger"></span>
+
+                <div class="form-group">
+                    <input type="submit" onclick="SuaPhieuMuon();" value="Cập Nhật" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div class="col-md-8">
+    @{
+        var chitietphieumuon = db.ChiTietPhieuMuons.Where(x => x.MaPhieuMuon == Model.MaPhieuMuon).ToList();
+    }
+
+    <dd class="col-sm-10"></dd>
+    <dt class="col-sm-2"></dt>
+    <dd class="col-sm-10">
+        <table class="table table-bordered dataTable" @*id="dataTable"*@
+               width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info"
+               style="width: 100%;">
+
+            <tr>
+                <th>
+                    Mã Phiếu Mượn
+                </th>
+                <th>
+                    Tên Sách
+                </th>
+                <th>
+                    Số lượng
+                </th>
+            </tr>
+
+            <tbody>
+                @foreach (var item in chitietphieumuon)
+                {
+                    <tr>
+                        <td>
+                            @{
+                                var pm = db.PhieuMuons.Find(item.MaPhieuMuon);
+                            }
+                            @pm.MaPhieuMuon
+                        </td>
+                        <td>
+                            @{
+                                var sach = db.Saches.Find(item.MaSach);
+                            }
+                            @sach.TenSach
+                        </td>
+                        <td>
+                            @item.SoLuong
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </dd>
+</div>
+
+<div>
+    <a asp-action="PhieuMuon">Quay Lại</a>
+</div>
+
+<script type="text/javascript">
+    function SuaPhieuMuon() {
+        var MaPhieuMuon = document.getElementById("MaPhieuMuon").value;
+        var NgayMuon = document.getElementById("NgayMuon").value;
+        var NgayTra = document.getElementById("NgayTra").value;
+        var TinhTrangPhieuMuon = document.getElementById("TrangThai").value;
+        var TongSachMuon = document.getElementById("TongSachMuon").value;
+        var MaDocGia = document.getElementById("MaDocGia").value;
+        var MaNhanVien = document.getElementById("MaNhanVien").value;
+        var NgayTraThucTe = document.getElementById("NgayTraThucTe").value;
+        var TienPhat = document.getElementById("TienPhat").value;
+        var GhiChu = document.getElementById("GhiChu").value;
+        var url = 'https://localhost:7113/api/trasachapi?MaPhieuMuon=' + MaPhieuMuon
+            + '&NgayMuon=' + NgayMuon + '&NgayTra=' + NgayTra
+            + '&TinhTrang=' + TinhTrangPhieuMuon + '&TongSachMuon=' + TongSachMuon
+            + '&MaDocGia=' + MaDocGia + '&MaNhanVien=' + MaNhanVien
+            + '&NgayTraThucTe=' + NgayTraThucTe + '&TienPhat=' + TienPhat + '&GhiChu=' + GhiChu;
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            contentType: 'json',
+            dataType: 'json',
+            error: function (response) {
+                alert("Sửa không thành công")
+            },
+            success: function (reponse) {
+                alert("Sửa thành công");
+                window.location = 'https://localhost:7113/admin/homeadmin/phieumuon';
+            }
+        });
+    }
+</script>

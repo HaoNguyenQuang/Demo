@@ -1,0 +1,73 @@
+﻿@model ThucTapChuyenMon.Models.ViTri
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "SuaViTri";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script type="text/javascript">
+    function SuaViTri() {
+        var MaViTri = document.getElementById("MaViTri").value;
+        var KeSach = document.getElementById("KeSach").value;
+        var NganSach = document.getElementById("NganSach").value;
+        var GiaSach = document.getElementById("GiaSach").value;
+        var ViTriTrenGia = document.getElementById("ViTriTrenGia").value;
+        var url = 'https://localhost:7113/api/vitriapi?MaViTri=' + MaViTri
+            + '&KeSach=' + KeSach
+            + '&NganSach=' + NganSach
+            + '&GiaSach=' + GiaSach
+            + '&ViTriTrenGia=' + ViTriTrenGia;
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            contentType: 'json',
+            dataType: 'json',
+            error: function (response) {
+                alert("Sửa không thành công")
+            },
+            success: function (reponse) {
+                alert("Sửa thành công");
+                window.location.href = 'https://localhost:7113/admin/vitri';
+            }
+        });
+    }
+</script>
+<h1>Sửa Vị Trí</h1>
+
+<h4>Vị Trí</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SuaViTri">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaViTri" />
+            <div class="form-group">
+                <label asp-for="KeSach" class="control-label">Kệ Sách</label>
+                <input asp-for="KeSach" class="form-control" />
+                <span asp-validation-for="KeSach" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NganSach" class="control-label">Ngăn Sách</label>
+                <input asp-for="NganSach" class="form-control" />
+                <span asp-validation-for="NganSach" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiaSach" class="control-label">Giá Sách</label>
+                <input asp-for="GiaSach" class="form-control" />
+                <span asp-validation-for="GiaSach" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ViTriTrenGia" class="control-label">Vị Trí Trên Giá</label>
+                <input asp-for="ViTriTrenGia" class="form-control" />
+                <span asp-validation-for="ViTriTrenGia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" onclick="SuaViTri()" value="Lưu" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="ViTri">Về danh sách</a>
+</div>
+

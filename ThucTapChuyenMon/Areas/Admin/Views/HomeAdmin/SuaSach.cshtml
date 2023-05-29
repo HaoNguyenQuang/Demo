@@ -1,0 +1,116 @@
+﻿@model ThucTapChuyenMon.Models.Sach
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "SuaSach";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script type="text/javascript">
+    function SuaSach() {
+        var MaSach = document.getElementById("MaSach").value;
+        var TenSach = document.getElementById("TenSach").value;
+        var TenTacGia = document.getElementById("TenTacGia").value;
+        var SoLuong = document.getElementById("SoLuong").value;
+        var NamXuatBan = document.getElementById("NamXuatBan").value;
+        var MoTa = document.getElementById("MoTa").value;
+        var GiaBia = document.getElementById("GiaBia").value;
+        var AnhDaiDien = document.getElementById("AnhDaiDien").value;
+        var TinhTrangSach = document.getElementById("TinhTrangSach").value;
+        var MaViTri = document.getElementById("MaViTri").value;
+        var MaTheLoai = document.getElementById("MaTheLoai").value;
+        var MaNxb = document.getElementById("MaNxb").value;
+        var url = 'https://localhost:7113/api/sachapi?MaSach=' + MaSach
+            + '&TenSach=' + TenSach + '&TenTacGia=' + TenTacGia
+            + '&SoLuong=' + SoLuong + '&NamXuatBan=' + NamXuatBan
+            + '&MoTa=' + MoTa + '&GiaBia=' + GiaBia
+            + '&AnhDaiDien=' + AnhDaiDien + '&TinhTrangSach=' + TinhTrangSach
+            + '&MaViTri=' + MaViTri + '&MaTheLoai=' + MaTheLoai + '&MaNxb=' + MaNxb;
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            contentType: 'json',
+            dataType: 'json',
+            error: function (response) {
+                alert("Sửa không thành công")
+            },
+            success: function (reponse) {
+                alert("Sửa thành công");
+                window.location.href = 'https://localhost:7113/admin/sach';
+            }
+        });
+    }
+</script>
+<h1>Sửa Sách</h1>
+
+<h4>Sách</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SuaSach">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaSach" />
+            <div class="form-group">
+                <label asp-for="TenSach" class="control-label">Tên Sách</label>
+                <input asp-for="TenSach" class="form-control" />
+                <span asp-validation-for="TenSach" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TenTacGia" class="control-label">Tên Tác Giả</label>
+                <input asp-for="TenTacGia" class="form-control" />
+                <span asp-validation-for="TenTacGia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SoLuong" class="control-label">Số Lượng</label>
+                <input asp-for="SoLuong" class="form-control" />
+                <span asp-validation-for="SoLuong" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NamXuatBan" class="control-label">Năm Xuất Bản</label>
+                <input asp-for="NamXuatBan" class="form-control" />
+                <span asp-validation-for="NamXuatBan" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MoTa" class="control-label">Mô Tả</label>
+                <input asp-for="MoTa" class="form-control" />
+                <span asp-validation-for="MoTa" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiaBia" class="control-label">Giá Bìa</label>
+                <input asp-for="GiaBia" class="form-control" />
+                <span asp-validation-for="GiaBia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AnhDaiDien" class="control-label">Ảnh Đại Diện</label>
+                <input asp-for="AnhDaiDien" class="form-control" />
+                <span asp-validation-for="AnhDaiDien" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TinhTrangSach" class="control-label">Tình Trạng Sách</label>
+                <input asp-for="TinhTrangSach" class="form-control" />
+                <span asp-validation-for="TinhTrangSach" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaViTri" class="control-label">Mã Vị Trí</label>
+                <select asp-for="MaViTri" class="form-control" asp-items="ViewBag.MaViTri"></select>
+                <span asp-validation-for="MaViTri" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaTheLoai" class="control-label">Tên Thể Loại</label>
+                <select asp-for="MaTheLoai" class="form-control" asp-items="ViewBag.MaTheLoai"></select>
+                <span asp-validation-for="MaTheLoai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaNxb" class="control-label">Tên Nhà Xuất Bản</label>
+                <select asp-for="MaNxb" class="form-control" asp-items="ViewBag.MaNxb"></select>
+                <span asp-validation-for="MaNxb" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" onclick="SuaSach()" value="Lưu" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Sach">Về danh sách</a>
+</div>
+
